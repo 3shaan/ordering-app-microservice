@@ -1,6 +1,14 @@
 import { Logger, NotFoundException } from '@nestjs/common';
+import {
+  ClientSession,
+  Connection,
+  FilterQuery,
+  Model,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
-import { Connection, FilterQuery, Model, SaveOptions, Types } from 'mongoose';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   protected abstract readonly logger: Logger;
@@ -34,5 +42,47 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     }
 
     return document as unknown as TDocument;
+  }
+
+  // find one and update
+
+  async findOneAndUpdate(
+    filterQuery: FilterQuery<TDocument>,
+    update: UpdateQuery<TDocument>,
+  ) {
+    const document = await this.model.findOneAndUpdate(filterQuery, update, {
+      new: true,
+      lean: true,
+    });
+
+    if (!document) {
+      this.logger.warn('Document not found with filterQuery', filterQuery);
+      throw new NotFoundException('Document not found.');
+    }
+
+    return document as unknown as TDocument;
+  }
+
+  async upsert(
+    filterQuery: FilterQuery<TDocument>,
+    document: Partial<TDocument>,
+  ): Promise<TDocument> {
+    return this.model.findOneAndUpdate(filterQuery, document, {
+      new: true,
+      lean: true,
+      upsert: true,
+    }) as Promise<TDocument>;
+  }
+
+  async find(filterQuery: FilterQuery<TDocument>) {
+    return this.model.find(filterQuery, {}, { lean: true }) as Promise<
+      TDocument[]
+    >;
+  }
+
+  async startTransaction(): Promise<ClientSession> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    return session;
   }
 }
