@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/orders/Dockerfile
-      target: Development
+      target: development
     command: pnpm start:dev orders
     env_file:
       - ./apps/orders/.env
