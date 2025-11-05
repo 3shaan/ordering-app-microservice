@@ -18,8 +18,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.string().required(),
         MONGODB_URI: Joi.string().required(),
+        PORT: Joi.string().required().default('3001'),
       }),
       envFilePath: './apps/auth/.env',
     }),
@@ -27,7 +28,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<number>('JWT_EXPIRATION'),
+          expiresIn: configService.get<number>('JWT_EXPIRATION_TIME'),
         },
       }),
       inject: [ConfigService],

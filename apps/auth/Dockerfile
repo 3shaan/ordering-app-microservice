@@ -1,0 +1,34 @@
+FROM node:22-alpine AS development
+
+WORKDIR /usr/src/app
+
+RUN corepack enable  && corepack prepare  pnpm@10.11.0 --activate
+
+COPY  pnpm-lock.yaml  package.json ./
+
+RUN pnpm install
+
+COPY . .
+
+RUN pnpm run build
+
+
+FROM node:22-alpine AS production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+RUN corepack enable  && corepack prepare  pnpm@10.11.0 --activate
+
+COPY  pnpm-lock.yaml  package.json ./
+
+
+RUN pnpm install --prod
+
+COPY . .
+
+COPY --from=Development /usr/src/app/dist ./dist
+
+CMD [ "node", "dist/app/auth/main" ]
