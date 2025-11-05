@@ -7,7 +7,7 @@ import { Channel, Message } from 'amqplib';
 export class RmqService {
   constructor(private readonly configService: ConfigService) {}
 
-  getOptions(queue: string, noAck?: false): RmqOptions {
+  getOptions(queue: string, noAck?: boolean = false): RmqOptions {
     return {
       transport: Transport.RMQ,
       options: {
