@@ -30,7 +30,7 @@ export class UserService {
         email: request.email,
       });
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error('User not found. Can be Created');
     }
 
     if (user) {

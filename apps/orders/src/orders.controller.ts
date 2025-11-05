@@ -10,8 +10,8 @@ export class OrdersController {
   @Post()
   @UseGuards(JwtAuthGuard)
   createOrder(@Body() request: CreateOrderRequest, @Req() req: any) {
-    console.log('userkjll', req.user);
-    return this.ordersService.create(request);
+    // console.log('User:', req.user);
+    return this.ordersService.create(request, req.cookies?.Authentication);
   }
 
   @Get()

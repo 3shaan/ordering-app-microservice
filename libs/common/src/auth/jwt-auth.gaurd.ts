@@ -35,6 +35,7 @@ export class JwtAuthGuard implements CanActivate {
     } else if (ctx.getType() === 'http') {
       authentication = ctx.switchToHttp().getRequest().cookies?.Authentication;
     }
+    console.log('Authentication:', authentication);
 
     if (!authentication) {
       throw new UnauthorizedException('Authentication is required');
