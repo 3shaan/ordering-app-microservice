@@ -13,6 +13,7 @@ import Joi from 'joi';
         RMQ_URI: Joi.string().uri().required(),
         RMQ_BILLING_QUEUE: Joi.string().required(),
       }),
+      envFilePath: 'apps/billing/.env',
     }),
     RmqModule,
   ],
